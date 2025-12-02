@@ -33,13 +33,16 @@ impl Dial {
         let new_position = self.position + amount;
         // figure out how many times we pass 0
         let new_position = if new_position > 99 || new_position < 0 {
-            // then remove the extre passes
+            // then remove the extra passes
             let num_passes = new_position.abs() / 100;
             // if we are going "left" (negative) we need to add +1 total passes
             let extra_pass = if amount < 0 { 1 } else { 0 };
-            self.zero_passes += num_passes.abs() + extra_pass;
             // and get the final position
-            new_position.rem_euclid(100)
+            let final_position = new_position.rem_euclid(100);
+            // exclude landing on 0 from zero_passes count
+            let landed_on_zero = if final_position == 0 { 1 } else { 0 };
+            self.zero_passes += num_passes.abs() + extra_pass - landed_on_zero;
+            final_position
         } else {
             // or we didn't pass 0
             new_position
