@@ -27,6 +27,8 @@ impl Dial {
     }
 
     fn move_dial(&mut self, amount: isize) {
+        // any number MORE than 99 starts again from 0
+        // any number LESS than 0 starts again from 99
         let new_position = (self.position + amount).rem_euclid(100);
         if new_position == 0 {
             self.zeros += 1;
@@ -38,6 +40,9 @@ impl Dial {
     fn amount_from_line(line: &String) -> Result<isize> {
         let is_negative = line.starts_with('L');
         let num_str = line.trim_start_matches(['R', 'L']);
+        // it doesn't matter how big the number is as we only care about
+        // how many times the dial LANDS on 0, not how many times
+        // zero is passed
         let num_str = if num_str.len() > 2 {
             &num_str[num_str.len() - 2..]
         } else {
@@ -66,5 +71,7 @@ fn main() -> Result<()> {
 
     println!("Total Zeros: {}", dial.zeros);
 
+    // i'm so used to working with usize that I chose that by default and hit
+    // a "attempt to add with overflow" panic... obviously usize can't be negative
     Ok(())
 }
